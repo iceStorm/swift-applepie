@@ -179,21 +179,17 @@ class Game {
     }
     
     func nextRound() {
-        //  get the next item
         currentItem = nextItem
-        
-        
-        if (isOutOfWords) {  //  there is no more words in the list
-            eventListener.onOutOfWords()
-            return;
-        }
-
-        
         scores += mode == GameMode.Easy ? 50 : 100
         typedCharacters = []
         continuousSuccessCount = -1
         continousFailureCount = -1
         hintedCount = 0
+        
+        if (isOutOfWords) {  //  there is no more words in the list
+            eventListener.onOutOfWords()
+            return;
+        }
         
         eventListener.onNextRound(currentItem: currentItem, currentRound: currentItemIndex + 1, totalRounds: data.count + currentItemIndex + 1, hintsCount: hintLimit, scores: scores)
     }
