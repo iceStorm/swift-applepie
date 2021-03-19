@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "BEMCheckBox",
+        "repositoryURL": "https://github.com/Boris-Em/BEMCheckBox",
+        "state": {
+          "branch": "master",
+          "revision": "a3292ebae9f0c2737b0c90281219dced2ce51ac8",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
