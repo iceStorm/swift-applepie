@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import swift_extensions
 
 enum SegueIntent {
     case Finished;
@@ -15,7 +16,6 @@ enum SegueIntent {
 
 class ViewController: UIViewController, GameStateEventListener {
     @IBOutlet var buttonsList: [UIButton]!
-    
     
     @IBOutlet weak var stackviewGuessedButton: UIStackView!
     @IBOutlet var guessedButtonsList: [UIButton]!
@@ -241,8 +241,10 @@ class ViewController: UIViewController, GameStateEventListener {
         
         
         
+        let char = sender.currentTitle![0]
+        
         //  let's predict the pressed character
-        if (game.predict(guessedChar: Character(sender.currentTitle!))) {
+        if (game.predict(guessedChar: char!)) {
             sender.backgroundColor = UIColor.green
         }
         else {

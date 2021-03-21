@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5843B58D260641AC0047B68F /* swift-extensions in Frameworks */ = {isa = PBXBuildFile; productRef = 5843B58C260641AC0047B68F /* swift-extensions */; };
 		58D616FA260445FA00C1313B /* GameFinishedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D616F9260445FA00C1313B /* GameFinishedViewController.swift */; };
 		58D99AE62602E8FB00E7003E /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D99AE52602E8FB00E7003E /* HomeViewController.swift */; };
 		58D99AEB2602EFFE00E7003E /* BEMCheckBox in Frameworks */ = {isa = PBXBuildFile; productRef = 58D99AEA2602EFFE00E7003E /* BEMCheckBox */; };
@@ -38,6 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5843B58D260641AC0047B68F /* swift-extensions in Frameworks */,
 				58D99AEB2602EFFE00E7003E /* BEMCheckBox in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -96,6 +98,7 @@
 			name = applepie;
 			packageProductDependencies = (
 				58D99AEA2602EFFE00E7003E /* BEMCheckBox */,
+				5843B58C260641AC0047B68F /* swift-extensions */,
 			);
 			productName = applepie;
 			productReference = 58F9763025EF192200918408 /* applepie.app */;
@@ -127,6 +130,7 @@
 			mainGroup = 58F9762725EF192200918408;
 			packageReferences = (
 				58D99AE92602EFFE00E7003E /* XCRemoteSwiftPackageReference "BEMCheckBox" */,
+				5843B58B260641AC0047B68F /* XCRemoteSwiftPackageReference "swift-extensions" */,
 			);
 			productRefGroup = 58F9763125EF192200918408 /* Products */;
 			projectDirPath = "";
@@ -358,6 +362,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		5843B58B260641AC0047B68F /* XCRemoteSwiftPackageReference "swift-extensions" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "file:///Users/icestorm/Desktop/swift-extensions";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		58D99AE92602EFFE00E7003E /* XCRemoteSwiftPackageReference "BEMCheckBox" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Boris-Em/BEMCheckBox";
@@ -369,6 +381,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		5843B58C260641AC0047B68F /* swift-extensions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5843B58B260641AC0047B68F /* XCRemoteSwiftPackageReference "swift-extensions" */;
+			productName = "swift-extensions";
+		};
 		58D99AEA2602EFFE00E7003E /* BEMCheckBox */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 58D99AE92602EFFE00E7003E /* XCRemoteSwiftPackageReference "BEMCheckBox" */;

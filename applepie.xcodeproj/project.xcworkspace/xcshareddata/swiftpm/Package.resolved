@@ -9,6 +9,15 @@
           "revision": "a3292ebae9f0c2737b0c90281219dced2ce51ac8",
           "version": null
         }
+      },
+      {
+        "package": "swift-extensions",
+        "repositoryURL": "/Users/icestorm/Desktop/swift-extensions",
+        "state": {
+          "branch": "master",
+          "revision": "d4387b7081d88245603157f478d7e8fb3d6ab557",
+          "version": null
+        }
       }
     ]
   },
