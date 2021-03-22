@@ -175,11 +175,28 @@
                                                 </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Round: 0/0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i0g-E0-min">
-                                                <rect key="frame" x="216" y="0.0" width="127" height="50"/>
+                                                <rect key="frame" x="117" y="0.0" width="127" height="50"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bjt-y7-Q7W">
+                                                <rect key="frame" x="311.5" y="0.0" width="130" height="50"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mode: " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RIh-5m-zbv">
+                                                        <rect key="frame" x="0.0" y="0.0" width="76" height="50"/>
+                                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Easy" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Eh7-05-Z75">
+                                                        <rect key="frame" x="76" y="0.0" width="54" height="50"/>
+                                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
+                                                        <color key="textColor" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                            </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="PhA-eT-cUx">
                                                 <rect key="frame" x="508.5" y="0.0" width="455.5" height="50"/>
                                                 <subviews>
@@ -737,11 +754,12 @@
                         <outlet property="btnBack" destination="Tmz-Gz-ggE" id="fXb-P7-a0Q"/>
                         <outlet property="btnHint" destination="GeU-hl-LKe" id="Oh6-rE-sWS"/>
                         <outlet property="imvHint" destination="wTG-28-PkM" id="nK6-Pa-joM"/>
+                        <outlet property="lbGameMode" destination="Eh7-05-Z75" id="StH-V3-5pE"/>
+                        <outlet property="lbHearts" destination="ABH-L4-L9e" id="src-dc-hXB"/>
+                        <outlet property="lbHints" destination="kmZ-qj-U5t" id="3az-mv-zDU"/>
+                        <outlet property="lbRounds" destination="i0g-E0-min" id="bRF-tT-Rby"/>
+                        <outlet property="lbScores" destination="HZn-ai-J9m" id="ScP-Qx-tUT"/>
                         <outlet property="stackviewGuessedButton" destination="pGi-dj-v7A" id="R0E-hc-JX2"/>
-                        <outlet property="txtHearts" destination="ABH-L4-L9e" id="src-dc-hXB"/>
-                        <outlet property="txtHints" destination="kmZ-qj-U5t" id="3az-mv-zDU"/>
-                        <outlet property="txtRounds" destination="i0g-E0-min" id="bRF-tT-Rby"/>
-                        <outlet property="txtScores" destination="HZn-ai-J9m" id="ScP-Qx-tUT"/>
                         <outletCollection property="buttonsList" destination="2FZ-vn-bkL" collectionClass="NSMutableArray" id="5bp-Kp-Uq1"/>
                         <outletCollection property="buttonsList" destination="mU0-5e-cIf" collectionClass="NSMutableArray" id="p2w-fZ-M57"/>
                         <outletCollection property="buttonsList" destination="dAt-x1-xJF" collectionClass="NSMutableArray" id="n0y-iN-CGG"/>

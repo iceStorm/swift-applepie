@@ -31,22 +31,26 @@ protocol GameStateEventListener {
     func onNewRound(currentItem: GameData)
     func onScoresUpdated(scores: Int)
     
+    func onHintSuccess(character: Character)
     func onHintConsumed(hintsCount: Int)
     func onOutOfHints()
     
     func onRoundIndexUpdated(currentRound: Int, totalRounds: Int)
     func onHeartsChanged(count: Int)
     func onGuessedWordUpdated(callbackString: String)
+    func onGameModeChanged(mode: GameMode)
+    
 }
 
 
 class Game {
-    private var data: [GameData]
-    private var eventListener: GameStateEventListener
-    private var randomOrdering: Bool
     private var mode: GameMode
+    private var data: [GameData]
+    private var randomOrdering: Bool
+    private var eventListener: GameStateEventListener
     
-    private var scores: Int! {
+    
+    private var scores: Int {
         didSet {
             eventListener.onScoresUpdated(scores: scores)
         }
@@ -74,7 +78,7 @@ class Game {
     
     private var currentItemIndex: Int! {
         didSet {
-            eventListener.onRoundIndexUpdated(currentRound: currentItemIndex, totalRounds: data.count + currentItemIndex)
+            eventListener.onRoundIndexUpdated(currentRound: currentItemIndex + 1, totalRounds: data.count + currentItemIndex)
         }
     }
     
@@ -98,7 +102,7 @@ class Game {
                 scores -= 10 * continousFailureCount
             }
        }
-   }
+    }
     
     private var hintedCount: Int! {
         didSet {
@@ -111,6 +115,8 @@ class Game {
     }
     
     
+    
+    //  constructor
     init(eventListener: GameStateEventListener, data: [GameData], gameMode: GameMode = GameMode.Easy, randomOrdering: Bool = false) {
         self.randomOrdering = randomOrdering
         self.eventListener = eventListener
@@ -119,16 +125,20 @@ class Game {
         
         currentItemIndex = -1
         scores = 0
+        
+        eventListener.onGameModeChanged(mode: mode)
+        nextRound()
     }
     
     func nextRound() {
-        if (currentItemIndex != -1) {   //  bonus when finished a whole word
-            scores += mode == GameMode.Easy ? 50 : 100
-        } else {
-            heartsCount = mode == GameMode.Easy ? 10 : 5
+        if (currentItemIndex != -1) {   //  not the new game    (only the next games)
+            scores += mode == GameMode.Easy ? 50 : 100     //  bonus when finished a whole word
+        }
+        else {
+            heartsCount = mode == GameMode.Easy ? 10 : 5    //  this line is called only once to set the total hearts for the whole game
         }
         
-        currentItem = nextItem
+        currentItem = nextItem  //  must be called first to trigger the onNewRound() event to the ViewController
         typedCharacters = []
         continuousSuccessCount = -1
         continousFailureCount = -1
@@ -190,17 +200,13 @@ class Game {
         
         
         if (!currentItem.word.lowercased().contains(guessedChar.lowercased())) { //  wrong predicted
-            heartsCount -= 1
-            
-            
-            if (!isOutOfHearts) {
-                continuousSuccessCount = -1
+            if (mode == GameMode.Hard) {
                 continousFailureCount += 1
-                
-                if (mode == GameMode.Hard) {
-                    scores -= 10
-                }
+                scores -= 10
             }
+
+            continuousSuccessCount = -1
+            heartsCount -= 1
         }
         else
         {  //  predicted success
@@ -231,6 +237,7 @@ class Game {
             if (guessedCharacter == " ") {
                 hintedCount += 1
                 typedCharacters += "\(Array(currentItem.word)[randomNumber])"
+                eventListener.onHintSuccess(character: typedCharacters.last!)
                 
                 
                 //  minusing the score if hinted in the Hard mode

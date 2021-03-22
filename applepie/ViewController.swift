@@ -15,15 +15,15 @@ enum SegueIntent {
 }
 
 class ViewController: UIViewController, GameStateEventListener {
-    @IBOutlet var buttonsList: [UIButton]!
-    
     @IBOutlet weak var stackviewGuessedButton: UIStackView!
-    @IBOutlet var guessedButtonsList: [UIButton]!
+    @IBOutlet var guessedButtonsList: [UIButton]!   //  guessed word (each guessed character is on a button)
+    @IBOutlet var buttonsList: [UIButton]!  //  letter buttons
     
-    @IBOutlet weak var txtScores: UILabel!
-    @IBOutlet weak var txtRounds: UILabel!
-    @IBOutlet weak var txtHearts: UILabel!
-    @IBOutlet weak var txtHints: UILabel!
+    @IBOutlet weak var lbScores: UILabel!
+    @IBOutlet weak var lbRounds: UILabel!
+    @IBOutlet weak var lbHearts: UILabel!
+    @IBOutlet weak var lbHints: UILabel!
+    @IBOutlet weak var lbGameMode: UILabel!
     
     @IBOutlet weak var btnBack: UIButton!
     @IBOutlet weak var btnHint: UIButton!
@@ -39,20 +39,12 @@ class ViewController: UIViewController, GameStateEventListener {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
         initUI()
         
         
-        //  remove all existing guessed buttons for future handling easier | the three existing guessed buttons (blue) is for designing
-        while guessedButtonsList.count > 0 {
-            let firstElem = guessedButtonsList.removeFirst()
-            firstElem.removeFromSuperview()
-        }
-        
-        
-        //  print(selectedGameMode, allowRandomOrdering)
         //  the three variables is passed from the HomeViewController
         game = Game(eventListener: self, data: gameData, gameMode: selectedGameMode, randomOrdering: allowRandomOrdering)
-        game.nextRound()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -68,9 +60,17 @@ class ViewController: UIViewController, GameStateEventListener {
     func initUI() {
         btnHint.layer.cornerRadius = 10
         
+        
         //  set letter buttons rounded radius
         for button in buttonsList {
             button.layer.cornerRadius = button.frame.size.width / 2
+        }
+        
+        
+        //  remove all existing guessed buttons for future handling easier | the three existing guessed buttons (blue) is for designing
+        while guessedButtonsList.count > 0 {
+            let firstElem = guessedButtonsList.removeFirst()
+            firstElem.removeFromSuperview()
         }
     }
     
@@ -117,8 +117,8 @@ class ViewController: UIViewController, GameStateEventListener {
     
     //  get called by the "game" instance
     func onNewRound(currentItem: GameData) {
-        setGuessableButtons(currentItem.word)
-        guessedWord = String(repeating: " ", count: currentItem.word.count)
+        setGuessableButtons(currentItem.word)   //  adding or removing the guessable buttons to match the length of current game's word
+        guessedWord = String(repeating: " ", count: currentItem.word.count) //  set a blank guessable word on the guessable buttons
         imvHint.image = UIImage(named: currentItem.imageName)
         
         
@@ -150,15 +150,15 @@ class ViewController: UIViewController, GameStateEventListener {
     }
     
     func onHintConsumed(hintsCount: Int) {
-        txtHints.text = "\(hintsCount)"
+        lbHints.text = "\(hintsCount)"
     }
     
     func onScoresUpdated(scores: Int) {
-        txtScores.text = "\(scores)"
+        lbScores.text = "\(scores)"
     }
     
     func onHeartsChanged(count: Int) {
-        txtHearts.text = "\(count)"
+        lbHearts.text = "\(count)"
     }
     
     func onGuessedWordUpdated(callbackString: String) {
@@ -166,22 +166,29 @@ class ViewController: UIViewController, GameStateEventListener {
     }
      
     func onRoundIndexUpdated(currentRound: Int, totalRounds: Int) {
-        txtRounds.text = "Round: \(currentRound)\\\(totalRounds)"
+        lbRounds.text = "Round: \(currentRound)\\\(totalRounds)"
+    }
+    
+    func onGameModeChanged(mode: GameMode) {
+        lbGameMode.text = mode.rawValue
+        lbGameMode.textColor = mode == GameMode.Easy ? .systemGreen : .systemRed
+    }
+    
+    func onHintSuccess(character: Character) {
+        //  disable the hinted character
+        let hintedButton = (buttonsList.filter { $0.currentTitle![0]?.lowercased() == character.lowercased() }).first!
+        
+        hintedButton.isEnabled = false
+        hintedButton.backgroundColor = UIColor.systemYellow
     }
     
     
     
     
     //  computed properties
-    public var guessedWord: String {
+    public var guessedWord: String {    //  getting guessed word from the guessable buttons title
         get {
-            var charsArr: [Character] = []
-            
-            for button in guessedButtonsList {
-                charsArr += button.currentTitle ?? " "
-            }
-            
-            return String(charsArr)
+            return guessedButtonsList.reduce((""), { result, button in result + (button.currentTitle ?? " ") })
         }
         
         set(value) {
@@ -221,7 +228,6 @@ class ViewController: UIViewController, GameStateEventListener {
             sender.backgroundColor = UIColor.red
         }
 
-        
         
         //  disable the pressed button
         sender.isEnabled = false
