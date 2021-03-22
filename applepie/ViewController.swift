@@ -42,7 +42,7 @@ class ViewController: UIViewController, GameStateEventListener {
         initUI()
         
         
-        print("total guessed buttons: ", guessedButtonsList.count)
+        //  remove all existing guessed buttons for future handling easier | the three existing guessed buttons (blue) is for designing
         while guessedButtonsList.count > 0 {
             let firstElem = guessedButtonsList.removeFirst()
             firstElem.removeFromSuperview()
@@ -50,8 +50,9 @@ class ViewController: UIViewController, GameStateEventListener {
         
         
         //  print(selectedGameMode, allowRandomOrdering)
-        //  the three variables is passed from HomeViewController
+        //  the three variables is passed from the HomeViewController
         game = Game(eventListener: self, data: gameData, gameMode: selectedGameMode, randomOrdering: allowRandomOrdering)
+        game.nextRound()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -92,7 +93,7 @@ class ViewController: UIViewController, GameStateEventListener {
         btnHint.setTitleColor(.systemOrange, for: .normal)
     }
     
-    func setGuessableButtons(_ currentWord: String) {   //  removing or adding guessed buttons that match the length of current word
+    func setGuessableButtons(_ currentWord: String) {   //  removing or adding guessable buttons that match the length of current word
         //  adding
         if (guessedButtonsList.count < currentWord.count) {
             for _ in 0..<currentWord.count - guessedButtonsList.count {
@@ -115,18 +116,7 @@ class ViewController: UIViewController, GameStateEventListener {
     
     
     //  get called by the "game" instance
-    func onNewGame(currentItem: GameData, totalRounds: Int, hintsCount: Int, heartsCount: Int, scores: Int) {
-        setGuessableButtons(currentItem.word)
-        guessedWord = String(repeating: " ", count: currentItem.word.count)
-        imvHint.image = UIImage(named: currentItem.imageName)
-        
-        txtRounds.text = "Rouds: 1\\\(totalRounds)"
-        txtHints.text = "\(hintsCount)"
-        txtHearts.text = "\(heartsCount)"
-        txtScores.text = "\(scores)"
-    }
-    
-    func onNextRound(currentItem: GameData, currentRound: Int, totalRounds: Int, hintsCount: Int, scores: Int) {
+    func onNewRound(currentItem: GameData) {
         setGuessableButtons(currentItem.word)
         guessedWord = String(repeating: " ", count: currentItem.word.count)
         imvHint.image = UIImage(named: currentItem.imageName)
@@ -141,15 +131,6 @@ class ViewController: UIViewController, GameStateEventListener {
         
         //  re-enabled the hint button
         releaseHintButton()
-        txtHints.text = "\(hintsCount)"
-        
-        
-        //  update the round index
-        txtRounds.text = "Round: \(currentRound)\\\(totalRounds)"
-        
-        
-        //  update the score
-        txtScores.text = "\(scores)"
     }
     
     func onOutOfWords() {
@@ -182,6 +163,10 @@ class ViewController: UIViewController, GameStateEventListener {
     
     func onGuessedWordUpdated(callbackString: String) {
         guessedWord = callbackString
+    }
+     
+    func onRoundIndexUpdated(currentRound: Int, totalRounds: Int) {
+        txtRounds.text = "Round: \(currentRound)\\\(totalRounds)"
     }
     
     
@@ -228,23 +213,8 @@ class ViewController: UIViewController, GameStateEventListener {
     
     //  event handling functions
     @IBAction func letterButtonTouched(_ sender: UIButton) {
-        if (game.isOutOfWords) {
-            segueIntent = .Finished
-            performSegue(withIdentifier: "GoToFinished", sender: self)
-            return
-        }
-        if (game.isOutOfHearts) {
-            segueIntent = .Failed
-            performSegue(withIdentifier: "GoToFinished", sender: self)
-            return
-        }
-        
-        
-        
-        let char = sender.currentTitle![0]
-        
         //  let's predict the pressed character
-        if (game.predict(guessedChar: char!)) {
+        if (game.predict(guessedChar: sender.currentTitle![0]!)) {
             sender.backgroundColor = UIColor.green
         }
         else {

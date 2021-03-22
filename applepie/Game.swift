@@ -28,50 +28,111 @@ protocol GameStateEventListener {
     func onOutOfWords()
     func onOutOfHearts()
     
-    func onNewGame(currentItem: GameData, totalRounds: Int, hintsCount: Int, heartsCount: Int, scores: Int)
+    func onNewRound(currentItem: GameData)
     func onScoresUpdated(scores: Int)
-    func onNextRound(currentItem: GameData, currentRound: Int, totalRounds: Int, hintsCount: Int, scores: Int)
     
     func onHintConsumed(hintsCount: Int)
     func onOutOfHints()
     
+    func onRoundIndexUpdated(currentRound: Int, totalRounds: Int)
     func onHeartsChanged(count: Int)
     func onGuessedWordUpdated(callbackString: String)
 }
 
 
 class Game {
+    private var data: [GameData]
     private var eventListener: GameStateEventListener
     private var randomOrdering: Bool
     private var mode: GameMode
-    private var scores: Int
-    private var heartsCount: Int
-    private lazy var currentItem: GameData = GameData(word: "", imageName: "")
-    private var currentItemIndex: Int
-    private var typedCharacters: [Character]
-    private var continuousSuccessCount: Int
-    private var continousFailureCount: Int
-    private var hintedCount: Int
-    private var data: [GameData]
+    
+    private var scores: Int! {
+        didSet {
+            eventListener.onScoresUpdated(scores: scores)
+        }
+    }
+    
+    private var heartsCount: Int! {
+        didSet {
+            eventListener.onHeartsChanged(count: heartsCount)
+            if heartsCount == 0 {
+                eventListener.onOutOfHearts()
+            }
+        }
+    }
+    
+    private var currentItem: GameData! {
+        willSet {
+            if currentItem != nil && newValue.word == "" {
+                eventListener.onOutOfWords()
+            }
+        }
+        didSet {
+            eventListener.onNewRound(currentItem: currentItem)
+        }
+    }
+    
+    private var currentItemIndex: Int! {
+        didSet {
+            eventListener.onRoundIndexUpdated(currentRound: currentItemIndex, totalRounds: data.count + currentItemIndex)
+        }
+    }
+    
+    private var typedCharacters: [Character]! {
+        didSet {
+            eventListener.onGuessedWordUpdated(callbackString: currentHiddenWord)
+        }
+    }
+    
+    private var continuousSuccessCount: Int! {
+        didSet {
+            if continuousSuccessCount > 0 {
+                scores += 10 * continuousSuccessCount
+            }
+        }
+    }
+    
+    private var continousFailureCount: Int! {
+        didSet {
+            if continousFailureCount > 0 && mode == GameMode.Hard {
+                scores -= 10 * continousFailureCount
+            }
+       }
+   }
+    
+    private var hintedCount: Int! {
+        didSet {
+            eventListener.onHintConsumed(hintsCount: hintLimit - hintedCount)
+            
+            if (hintLimit == hintedCount) {
+                eventListener.onOutOfHints()
+            }
+        }
+    }
     
     
     init(eventListener: GameStateEventListener, data: [GameData], gameMode: GameMode = GameMode.Easy, randomOrdering: Bool = false) {
         self.randomOrdering = randomOrdering
         self.eventListener = eventListener
         self.data = data
+        self.mode = gameMode
         
-        mode = gameMode
-        typedCharacters = []
         currentItemIndex = -1
-        heartsCount = mode == GameMode.Easy ? 10 : 5
+        scores = 0
+    }
+    
+    func nextRound() {
+        if (currentItemIndex != -1) {   //  bonus when finished a whole word
+            scores += mode == GameMode.Easy ? 50 : 100
+        } else {
+            heartsCount = mode == GameMode.Easy ? 10 : 5
+        }
+        
+        currentItem = nextItem
+        typedCharacters = []
         continuousSuccessCount = -1
         continousFailureCount = -1
         hintedCount = 0
-        scores = 0
-        currentItem = nextItem
-        
-        
-        eventListener.onNewGame(currentItem: currentItem, totalRounds: data.count + currentItemIndex, hintsCount: hintLimit, heartsCount: heartsCount, scores: scores)
     }
     
     
@@ -80,12 +141,6 @@ class Game {
     // whether the wordsList contains any word.
     var getScores: Int {
         return scores
-    }
-    
-    var isOutOfWords: Bool {
-        get {
-            return currentItem.word == ""
-        }
     }
     
     var isOutOfHearts: Bool {
@@ -136,19 +191,13 @@ class Game {
         
         if (!currentItem.word.lowercased().contains(guessedChar.lowercased())) { //  wrong predicted
             heartsCount -= 1
-            eventListener.onHeartsChanged(count: heartsCount)
             
             
-            // if after the predicting above was wrong & no more hearts
-            if (heartsCount == 0) {
-                eventListener.onOutOfHearts()
-            }
-            else {
+            if (!isOutOfHearts) {
                 continuousSuccessCount = -1
                 continousFailureCount += 1
                 
                 if (mode == GameMode.Hard) {
-                    scores -= continousFailureCount * 10
                     scores -= 10
                 }
             }
@@ -161,37 +210,16 @@ class Game {
             
             continuousSuccessCount += 1
             continousFailureCount = -1
-            scores += continuousSuccessCount * 10
         }
-        
-        
-        eventListener.onScoresUpdated(scores: scores)
-        eventListener.onGuessedWordUpdated(callbackString: currentHiddenWord)
 
         
-        print(currentItem, currentHiddenWord)
+        print(currentItem!, currentHiddenWord)
         if (isEndOfRound) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: nextRound)
         }
         
         
         return returnValue
-    }
-    
-    func nextRound() {
-        currentItem = nextItem
-        scores += mode == GameMode.Easy ? 50 : 100
-        typedCharacters = []
-        continuousSuccessCount = -1
-        continousFailureCount = -1
-        hintedCount = 0
-        
-        if (isOutOfWords) {  //  there is no more words in the list
-            eventListener.onOutOfWords()
-            return;
-        }
-        
-        eventListener.onNextRound(currentItem: currentItem, currentRound: currentItemIndex + 1, totalRounds: data.count + currentItemIndex + 1, hintsCount: hintLimit, scores: scores)
     }
     
     func hint(guessedWord: String) {
@@ -208,19 +236,7 @@ class Game {
                 //  minusing the score if hinted in the Hard mode
                 if (mode == GameMode.Hard) {
                     scores -= 20
-                    eventListener.onScoresUpdated(scores: scores)
                 }
-                
-                
-                //  hinting limitation reached
-                if (hintedCount == hintLimit) {
-                    eventListener.onOutOfHints()
-                }
-                
-                
-                //  update the UI
-                eventListener.onHintConsumed(hintsCount: hintLimit - hintedCount)
-                eventListener.onGuessedWordUpdated(callbackString: currentHiddenWord)
                 
                 
                 //  check if the user has just filled all the characters correctly

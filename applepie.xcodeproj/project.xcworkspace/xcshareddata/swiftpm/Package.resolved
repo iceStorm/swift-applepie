@@ -12,10 +12,10 @@
       },
       {
         "package": "swift-extensions",
-        "repositoryURL": "/Users/icestorm/Desktop/swift-extensions",
+        "repositoryURL": "https://github.com/iceStorm/swift-extensions",
         "state": {
           "branch": "master",
-          "revision": "d4387b7081d88245603157f478d7e8fb3d6ab557",
+          "revision": "1e967312aa85232eef5c6b321839700273931015",
           "version": null
         }
       }
