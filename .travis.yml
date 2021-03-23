@@ -1,8 +1,8 @@
 language: swift
 osx_image: xcode11.4
-xcode_workspace: TheLastProject.xcworkspace
-xcode_scheme: TheLastProject_Development
-xcode_destination: platform=iOS Simulator,OS=12.1,name=iPhone X
+xcode_workspace: project.xcworkspace
+xcode_scheme: applepie
+xcode_destination: platform=iOS Simulator,OS=12.1,name=iPad Pro (9.7-inch)
 before_install:
   - bundle install
   - bundle exec pod install --repo-update
